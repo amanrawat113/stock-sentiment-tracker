@@ -67,4 +67,4 @@ else:
     for alert in alerts:
         col_a, col_b = st.columns([4, 1])
         col_a.write(f"{alert['company_name']} ({alert['symbol']})")
-        ccol_b.metric("Net sentiment", alert["net_sentiment"], label_visibility="collapsed")
+        col_b.metric("Net sentiment", alert["net_sentiment"], label_visibility="collapsed")
