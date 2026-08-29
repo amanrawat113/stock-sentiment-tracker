@@ -1,26 +1,23 @@
-import requests
+from transformers import pipeline
 
-BSE_URL = "https://api.bseindia.com/BseIndiaAPI/api/AnnSubCategoryGetData/w"
+_sentiment_pipeline = None
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
-    "Referer": "https://www.bseindia.com/",
-    "sec-ch-ua": '"Not=A?Brand";v="99", "Google Chrome";v="151", "Chromium";v="151"',
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": '"Windows"',
-}
+def get_sentiment_pipeline():
+    """Load the model once, reuse across calls — loading it fresh every time is slow."""
+    global _sentiment_pipeline
+    if _sentiment_pipeline is None:
+        _sentiment_pipeline = pipeline(
+            "sentiment-analysis",
+            model="ProsusAI/finbert",
+            tokenizer="ProsusAI/finbert",
+        )
+    return _sentiment_pipeline
 
-params = {
-    "pageno": 1,
-    "strCat": -1,
-    "strPrevDate": "20260828",
-    "strScrip": "",
-    "strSearch": "P",
-    "strToDate": "20260828",
-    "strType": "C",
-    "subcategory": -1,
-}
 
-response = requests.get(BSE_URL, headers=HEADERS, params=params, timeout=15)
-print("Status:", response.status_code)
-print("Raw response:", response.text[:1000])
+def score_sentiment(text: str) -> tuple[str, float]:
+    clf = get_sentiment_pipeline()
+    result = clf(text[:512])[0]  # FinBERT has a token limit, truncate long headlines
+    return result["label"].lower(), float(result["score"])
+
+label, score = score_sentiment("Reliance Industries reports record quarterly profit, beats analyst estimates")
+print(label, score)
