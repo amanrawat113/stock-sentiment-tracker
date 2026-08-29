@@ -6,7 +6,6 @@ pydantic-settings
 requests
 psycopg2-binary 
 python-dotenv
-psycopg2
 yfinance
 transformers
 torch
