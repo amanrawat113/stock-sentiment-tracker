@@ -1,8 +1,12 @@
 import streamlit as st
 import requests
 from api.watchlist import WATCHLIST
+from dotenv import load_dotenv
+import os
 
-API_BASE = "http://51.21.182.206:8000/stock-sentiment-tracker/api/v1"
+load_dotenv()
+
+API_BASE = os.environ["API_BASE"]
 
 st.set_page_config(page_title="Stock Sentiment Tracker", layout="wide")
 st.title("Stock Sentiment Tracker")
